@@ -10,7 +10,7 @@ import streamlit as st
 import imageio.v2 as imageio
 
 
-st.set_page_config(page_title="Redwood", page_icon="🌸", layout="wide")
+st.set_page_config(page_title="Redwood", page_icon="🌲", layout="wide")
 
 OUTPUT_DIR = Path("outputs")
 OUTPUT_DIR.mkdir(exist_ok=True)
@@ -309,7 +309,7 @@ def generate_video_from_image(img: Image.Image, duration_sec=5, fps=24):
     return video_path
 
 
-st.title("🌸 ")
+st.title("🌲 ")
 st.caption("Upload foto laptop → ubah jadi visual promo cinematic → export image dan video pendek.")
 
 with st.sidebar:
