@@ -10,7 +10,7 @@ import streamlit as st
 import imageio.v2 as imageio
 
 
-st.set_page_config(page_title="IRIS", page_icon="🌸", layout="wide")
+st.set_page_config(page_title="Redwood", page_icon="🌸", layout="wide")
 
 OUTPUT_DIR = Path("outputs")
 OUTPUT_DIR.mkdir(exist_ok=True)
@@ -309,11 +309,11 @@ def generate_video_from_image(img: Image.Image, duration_sec=5, fps=24):
     return video_path
 
 
-st.title("🌸 IRIS")
+st.title("🌸 ")
 st.caption("Upload foto laptop → ubah jadi visual promo cinematic → export image dan video pendek.")
 
 with st.sidebar:
-    st.header("IRIS Settings")
+    st.header("Redwood Settings")
     headline = st.text_input("Headline", value="Worth It")
     subheadline = st.text_input("Subheadline", value="di kelasnya?")
     product_name = st.text_input("Product Name", value="Lenovo LOQ")
@@ -347,8 +347,8 @@ if uploaded:
         st.subheader("Foto Asli")
         st.image(user_img, use_container_width=True)
 
-    if st.button("Generate with IRIS", type="primary"):
-        with st.spinner("IRIS is generating your promo image..."):
+    if st.button("Generate with Redwood", type="primary"):
+        with st.spinner("Redwood is generating your promo image..."):
             promo = compose_promo_image(
                 laptop_img=user_img,
                 headline=headline,
@@ -364,7 +364,7 @@ if "promo_img" in st.session_state:
     promo = st.session_state["promo_img"]
 
     with col2:
-        st.subheader("Hasil IRIS")
+        st.subheader("Hasil Redwood")
         st.image(promo, use_container_width=True)
 
     png_bytes = pil_to_bytes(promo, format="PNG")
@@ -374,18 +374,18 @@ if "promo_img" in st.session_state:
     d1.download_button(
         "Download PNG",
         data=png_bytes,
-        file_name="iris_promo_laptop.png",
+        file_name="Redwood_promo_laptop.png",
         mime="image/png",
     )
     d2.download_button(
         "Download JPG",
         data=jpg_bytes,
-        file_name="iris_promo_laptop.jpg",
+        file_name="Redwood_promo_laptop.jpg",
         mime="image/jpeg",
     )
 
-    if st.button("Generate IRIS Video"):
-        with st.spinner("IRIS is rendering your video..."):
+    if st.button("Generate Redwood Video"):
+        with st.spinner("Redwood is rendering your video..."):
             video_path = generate_video_from_image(
                 promo,
                 duration_sec=duration_sec,
@@ -401,14 +401,14 @@ if "video_bytes" in st.session_state:
     st.download_button(
         "Download MP4",
         data=st.session_state["video_bytes"],
-        file_name="iris_promo_laptop_video.mp4",
+        file_name="Redwood_promo_laptop_video.mp4",
         mime="video/mp4",
     )
 
 st.markdown("---")
 st.markdown(
     """
-### Next upgrade untuk IRIS
+### Next upgrade untuk Redwood
 - ganti background removal sederhana dengan `rembg`
 - sambungkan ke image editing API
 - tambahkan text animation dan transition preset
