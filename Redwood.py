@@ -407,7 +407,7 @@ if "promo_img" in st.session_state:
 
     with col2:
         st.subheader("Hasil Redwood")
-        st.image(promo, use_container_width=True)
+        st.image(promo, width=320)
 
     png_bytes = pil_to_bytes(promo, fmt="PNG")
     jpg_bytes = pil_to_bytes(promo, fmt="JPG")
@@ -442,7 +442,10 @@ if "promo_img" in st.session_state:
 
 if "video_bytes" in st.session_state:
     st.subheader("Preview Video")
-    st.video(st.session_state["video_bytes"])
+
+    preview_col1, preview_col2, preview_col3 = st.columns([1, 2, 1])
+    with preview_col2:
+        st.video(st.session_state["video_bytes"])
     st.download_button(
         "Download MP4",
         data=st.session_state["video_bytes"],
