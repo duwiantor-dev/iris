@@ -512,12 +512,3 @@ if uploaded:
                 )
 
 st.markdown("---")
-st.markdown(
-    """
-### Next upgrade untuk Redwood
-- background removal yang lebih pintar
-- preset layout yang lebih banyak
-- text animation dan transition preset
-- history hasil generate
-"""
-)
