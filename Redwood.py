@@ -743,6 +743,11 @@ st.dataframe(
 
 st.markdown("<hr/>", unsafe_allow_html=True)
 
+COLOR_MAP_PERIOD = {
+    "Bulan Ini": "#1f77b4",
+    "Bulan Lalu": "#aec7e8",
+}
+
 # =========================
 # Trend chart (Day-of-Month comparison)
 # =========================
@@ -769,10 +774,25 @@ trend_dom["VALUE"] = trend_dom["VALUE"].fillna(0.0)
 
 if show_point_labels:
     trend_dom["LABEL"] = trend_dom["VALUE"].apply(compact_number)
-    fig = px.line(trend_dom, x="DAY", y="VALUE", color="PERIODE", markers=True, text="LABEL")
+    fig = px.line(
+        trend_dom,
+        x="DAY",
+        y="VALUE",
+        color="PERIODE",
+        markers=True,
+        text="LABEL",
+        color_discrete_map=COLOR_MAP_PERIOD,
+    )
     fig.update_traces(textposition="top center")
 else:
-    fig = px.line(trend_dom, x="DAY", y="VALUE", color="PERIODE", markers=True)
+    fig = px.line(
+        trend_dom,
+        x="DAY",
+        y="VALUE",
+        color="PERIODE",
+        markers=True,
+        color_discrete_map=COLOR_MAP_PERIOD,
+    )
 
 fig.update_layout(
     xaxis_title="Tanggal (Day of Month)",
@@ -794,10 +814,25 @@ trend_cum["CUM_VALUE"] = trend_cum.groupby("PERIODE")["VALUE"].cumsum()
 
 if show_point_labels:
     trend_cum["LABEL"] = trend_cum["CUM_VALUE"].apply(compact_number)
-    fig_cum = px.line(trend_cum, x="DAY", y="CUM_VALUE", color="PERIODE", markers=True, text="LABEL")
+    fig_cum = px.line(
+        trend_cum,
+        x="DAY",
+        y="CUM_VALUE",
+        color="PERIODE",
+        markers=True,
+        text="LABEL",
+        color_discrete_map=COLOR_MAP_PERIOD,
+    )
     fig_cum.update_traces(textposition="top center")
 else:
-    fig_cum = px.line(trend_cum, x="DAY", y="CUM_VALUE", color="PERIODE", markers=True)
+    fig_cum = px.line(
+        trend_cum,
+        x="DAY",
+        y="CUM_VALUE",
+        color="PERIODE",
+        markers=True,
+        color_discrete_map=COLOR_MAP_PERIOD,
+    )
 
 fig_cum.update_layout(
     xaxis_title="Tanggal (Day of Month)",
@@ -808,6 +843,22 @@ fig_cum.update_layout(
 st.plotly_chart(fig_cum, use_container_width=True)
 
 st.markdown("<hr/>", unsafe_allow_html=True)
+
+# =========================
+# NEW TABLE #2: TEAM DRIVER ANALYSIS
+# =========================
+st.markdown("<hr/>", unsafe_allow_html=True)
+st.subheader("🧠 Analisis Penyebab Perubahan")
+st.caption("Untuk TEAM yang TURUN: ditampilkan top driver yang paling narik turun. Untuk TEAM yang NAIK: top driver yang paling narik naik.")
+
+topk = st.slider("Top driver per kategori", 1, 10, 3, 1)
+analysis_df = team_driver_analysis_table_cached(df_last, df_this, top_k=topk)
+
+st.dataframe(
+    style_growth_pct_df(analysis_df),
+    use_container_width=True,
+    height=520,
+)
 
 # =========================
 # Top tables
@@ -907,21 +958,6 @@ with col3:
         hide_index=True,
     )
 
-# =========================
-# NEW TABLE #2: TEAM DRIVER ANALYSIS
-# =========================
-st.markdown("<hr/>", unsafe_allow_html=True)
-st.subheader("🧠 Analisa Penyebab Naik/Turun per TEAM (Top driver QTY)")
-st.caption("Untuk TEAM yang TURUN: ditampilkan top driver yang paling narik turun. Untuk TEAM yang NAIK: top driver yang paling narik naik.")
-
-topk = st.slider("Top driver per kategori", 1, 10, 3, 1)
-analysis_df = team_driver_analysis_table_cached(df_last, df_this, top_k=topk)
-
-st.dataframe(
-    style_growth_pct_df(analysis_df),
-    use_container_width=True,
-    height=520,
-)
 # =========================
 # EXTRA INSIGHT (tambahan)
 # =========================
