@@ -867,6 +867,148 @@ fig_cum.update_layout(
 )
 st.plotly_chart(fig_cum, use_container_width=True)
 
+
+# =========================
+# Pareto + Delta + Comparison
+# =========================
+st.markdown("<hr/>", unsafe_allow_html=True)
+st.subheader("Pareto + Delta + Comparison (This Vs Last Month)")
+
+pareto_dim = st.selectbox(
+    "Dimensi Pareto",
+    ["PLATFORM", "TEAM", "PRODUCT", "BRAND", "TRANSAKSI", "AREA"],
+    index=0,
+)
+
+pareto_top_n = st.slider("Top N Pareto", min_value=5, max_value=30, value=10, step=1)
+
+def build_pareto_comparison(df_this: pd.DataFrame, df_last: pd.DataFrame, dim_col: str, value_col: str, top_n: int = 10):
+    this_agg = (
+        df_this.groupby(dim_col, as_index=False)
+        .agg(THIS_VALUE=(value_col, "sum"))
+    )
+    last_agg = (
+        df_last.groupby(dim_col, as_index=False)
+        .agg(LAST_VALUE=(value_col, "sum"))
+    )
+
+    comp = this_agg.merge(last_agg, on=dim_col, how="outer").fillna(0.0)
+    comp[dim_col] = comp[dim_col].astype(str).str.strip()
+    comp = comp[comp[dim_col].ne("")].copy()
+    comp = comp.sort_values("THIS_VALUE", ascending=False).head(top_n).copy()
+
+    if comp.empty:
+        return comp
+
+    total_this = comp["THIS_VALUE"].sum()
+    total_last = comp["LAST_VALUE"].sum()
+
+    comp["THIS_SHARE"] = np.where(total_this != 0, comp["THIS_VALUE"] / total_this * 100.0, 0.0)
+    comp["LAST_SHARE"] = np.where(total_last != 0, comp["LAST_VALUE"] / total_last * 100.0, 0.0)
+    comp["PARETO_THIS"] = comp["THIS_SHARE"].cumsum()
+    comp["PARETO_LAST"] = comp["LAST_SHARE"].cumsum()
+    comp["DELTA_SHARE"] = comp["THIS_SHARE"] - comp["LAST_SHARE"]
+    comp["DELTA_LABEL"] = comp["DELTA_SHARE"].map(lambda x: f"{x:+.1f}%")
+
+    comp["BAR_HOVER"] = comp.apply(
+        lambda r: (
+            f"<b>{r[dim_col]}</b><br>"
+            f"{label_this}: {compact_number(r['THIS_VALUE'])}<br>"
+            f"{label_last}: {compact_number(r['LAST_VALUE'])}<br>"
+            f"Kontribusi {label_this}: {r['THIS_SHARE']:.2f}%<br>"
+            f"Kontribusi {label_last}: {r['LAST_SHARE']:.2f}%<br>"
+            f"Delta kontribusi: {r['DELTA_SHARE']:+.2f}%"
+        ),
+        axis=1,
+    )
+
+    return comp
+
+pareto_df = build_pareto_comparison(df_this, df_last, pareto_dim, metric_col, pareto_top_n)
+
+if pareto_df.empty:
+    st.info("Belum ada data untuk grafik Pareto pada filter saat ini.")
+else:
+    from plotly.subplots import make_subplots
+    import plotly.graph_objects as go
+
+    fig_pareto = make_subplots(specs=[[{"secondary_y": True}]])
+
+    fig_pareto.add_trace(
+        go.Bar(
+            x=pareto_df[pareto_dim],
+            y=pareto_df["THIS_VALUE"],
+            name=label_this,
+            marker_color="#8ecae6",
+            text=pareto_df["DELTA_LABEL"],
+            textposition="outside",
+            hovertext=pareto_df["BAR_HOVER"],
+            hovertemplate="%{hovertext}<extra></extra>",
+        ),
+        secondary_y=False,
+    )
+
+    fig_pareto.add_trace(
+        go.Scatter(
+            x=pareto_df[pareto_dim],
+            y=pareto_df["PARETO_THIS"],
+            name=f"Pareto {label_this}",
+            mode="lines+markers",
+            line=dict(color="#1f77b4", width=3),
+            marker=dict(symbol="circle", size=7, color="#1f77b4"),
+            hovertemplate="<b>%{x}</b><br>Pareto {}: %{y:.2f}%<extra></extra>".format(label_this),
+        ),
+        secondary_y=True,
+    )
+
+    fig_pareto.add_trace(
+        go.Scatter(
+            x=pareto_df[pareto_dim],
+            y=pareto_df["PARETO_LAST"],
+            name=f"Pareto {label_last}",
+            mode="lines+markers",
+            line=dict(color="#f59e0b", width=2.5, dash="dash"),
+            marker=dict(symbol="x", size=8, color="#f59e0b"),
+            hovertemplate="<b>%{x}</b><br>Pareto {}: %{y:.2f}%<extra></extra>".format(label_last),
+        ),
+        secondary_y=True,
+    )
+
+    fig_pareto.add_hline(
+        y=80,
+        line_width=1.5,
+        line_dash="solid",
+        line_color="#3b82f6",
+        opacity=0.85,
+        secondary_y=True,
+    )
+
+    fig_pareto.update_layout(
+        title="Pareto + Delta + Comparison (This Vs Last Month)",
+        hovermode="x unified",
+        legend_title_text="",
+        xaxis_title=pareto_dim.title(),
+        yaxis_title=f"{metric_name} ({label_this})",
+        margin=dict(l=40, r=40, t=70, b=40),
+    )
+
+    fig_pareto.update_yaxes(
+        title_text=f"{metric_name} ({label_this})",
+        secondary_y=False,
+        showgrid=True,
+        gridcolor="rgba(0,0,0,0.08)",
+    )
+    fig_pareto.update_yaxes(
+        title_text="Cumulative (%)",
+        range=[0, 105],
+        ticksuffix="%",
+        secondary_y=True,
+        showgrid=False,
+    )
+
+    st.plotly_chart(fig_pareto, use_container_width=True)
+
+
 st.markdown("<hr/>", unsafe_allow_html=True)
 
 # =========================
