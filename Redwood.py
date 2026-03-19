@@ -806,7 +806,7 @@ st.plotly_chart(fig, use_container_width=True)
 # Cumulative chart
 # =========================
 st.markdown("<hr/>", unsafe_allow_html=True)
-st.subheader(f"Statistik Kumulatif ({metric_name}))
+st.subheader(f"Statistik Kumulatif ({metric_name})")
 
 trend_cum = trend_dom.copy()
 trend_cum = trend_cum.sort_values(["PERIODE", "DAY"]).copy()
