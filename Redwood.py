@@ -880,7 +880,7 @@ pareto_dim = st.selectbox(
     index=0,
 )
 
-pareto_top_n = st.slider("Top N Pareto", min_value=5, max_value=30, value=10, step=1)
+pareto_top_n = 30
 
 def build_pareto_comparison(df_this: pd.DataFrame, df_last: pd.DataFrame, dim_col: str, value_col: str, top_n: int = 10):
     this_agg = (
