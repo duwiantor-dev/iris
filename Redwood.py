@@ -956,7 +956,7 @@ else:
             mode="lines+markers",
             line=dict(color="#1f77b4", width=3),
             marker=dict(symbol="circle", size=7, color="#1f77b4"),
-            hovertemplate="<b>%{x}</b><br>Pareto {}: %{y:.2f}%<extra></extra>".format(label_this),
+            hovertemplate=f"<b>%{{x}}</b><br>Pareto {label_this}: %{{y:.2f}}%<extra></extra>",
         ),
         secondary_y=True,
     )
@@ -969,7 +969,7 @@ else:
             mode="lines+markers",
             line=dict(color="#f59e0b", width=2.5, dash="dash"),
             marker=dict(symbol="x", size=8, color="#f59e0b"),
-            hovertemplate="<b>%{x}</b><br>Pareto {}: %{y:.2f}%<extra></extra>".format(label_last),
+            hovertemplate=f"<b>%{{x}}</b><br>Pareto {label_last}: %{{y:.2f}}%<extra></extra>",
         ),
         secondary_y=True,
     )
