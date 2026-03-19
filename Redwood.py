@@ -285,6 +285,7 @@ def clean_sales_df_cached(df_raw: pd.DataFrame) -> CleanData:
 
     df["ROW_TYPE"] = np.where(df["STATUS"].str.upper().str.contains("RETUR"), "RETUR", "SO_OUT")
     df["OTO_YES"] = df["OTO"].str.upper().eq("YES")
+    df["PLATFORM"] = df["NAMA CUSTOMER"].astype(str).str.strip()
 
     df = df[df["STATUS"].str.strip().ne("")].copy()
     return CleanData(df=df, date_min=df["TGL"].min(), date_max=df["TGL"].max())
@@ -620,10 +621,11 @@ with st.sidebar:
         team_sel = st.multiselect("TEAM", options_for(df_all, "TEAM"), default=[])
         product_sel = st.multiselect("PRODUCT", options_for(df_all, "PRODUCT"), default=[])
         brand_sel = st.multiselect("BRAND", options_for(df_all, "BRAND"), default=[])
+        platform_sel = st.multiselect("PLATFORM (NAMA CUSTOMER)", options_for(df_all, "PLATFORM"), default=[])
         apply_clicked = st.form_submit_button("✅ Apply Filter")
 
 if "filters" not in st.session_state:
-    st.session_state["filters"] = {"COUNTRY": [], "TRANSAKSI": [], "TEAM": [], "PRODUCT": [], "BRAND": []}
+    st.session_state["filters"] = {"COUNTRY": [], "TRANSAKSI": [], "TEAM": [], "PRODUCT": [], "BRAND": [], "PLATFORM": []}
 if apply_clicked:
     st.session_state["filters"] = {
         "COUNTRY": category_sel,
@@ -631,6 +633,7 @@ if apply_clicked:
         "TEAM": team_sel,
         "PRODUCT": product_sel,
         "BRAND": brand_sel,
+        "PLATFORM": platform_sel,
     }
 
 flt = st.session_state["filters"]
@@ -643,6 +646,7 @@ def apply_all_filters(df: pd.DataFrame) -> pd.DataFrame:
     out = apply_multifilter(out, "TEAM", flt["TEAM"])
     out = apply_multifilter(out, "PRODUCT", flt["PRODUCT"])
     out = apply_multifilter(out, "BRAND", flt["BRAND"])
+    out = apply_multifilter(out, "PLATFORM", flt["PLATFORM"])
     return out
 
 
@@ -778,6 +782,31 @@ fig.update_layout(
 )
 st.plotly_chart(fig, use_container_width=True)
 
+# =========================
+# Cumulative chart
+# =========================
+st.markdown("<hr/>", unsafe_allow_html=True)
+st.subheader(f"Statistik Kumulatif ({metric_name}) — Day of Month Comparison")
+
+trend_cum = trend_dom.copy()
+trend_cum = trend_cum.sort_values(["PERIODE", "DAY"]).copy()
+trend_cum["CUM_VALUE"] = trend_cum.groupby("PERIODE")["VALUE"].cumsum()
+
+if show_point_labels:
+    trend_cum["LABEL"] = trend_cum["CUM_VALUE"].apply(compact_number)
+    fig_cum = px.line(trend_cum, x="DAY", y="CUM_VALUE", color="PERIODE", markers=True, text="LABEL")
+    fig_cum.update_traces(textposition="top center")
+else:
+    fig_cum = px.line(trend_cum, x="DAY", y="CUM_VALUE", color="PERIODE", markers=True)
+
+fig_cum.update_layout(
+    xaxis_title="Tanggal (Day of Month)",
+    yaxis_title=f"Kumulatif {metric_name}",
+    legend_title_text="",
+    xaxis=dict(dtick=1),
+)
+st.plotly_chart(fig_cum, use_container_width=True)
+
 st.markdown("<hr/>", unsafe_allow_html=True)
 
 # =========================
@@ -804,8 +833,8 @@ with c5:
     small_title(f"Top {top_n} SKU", "(SPESIFIKASI)")
     render_html_table(top_table_cached(df_this, df_last, "SPESIFIKASI", metric_col, top_n), table_class="sku-table")
 with c6:
-    small_title(f"Top {top_n} PLATFORM", "(NAMA CUSTOMER)")
-    render_html_table(top_table_cached(df_this, df_last, "NAMA CUSTOMER", metric_col, top_n))
+    small_title(f"Top {top_n} PLATFORM", "(sumber: NAMA CUSTOMER)")
+    render_html_table(top_table_cached(df_this, df_last, "PLATFORM", metric_col, top_n))
 
 st.markdown("<hr/>", unsafe_allow_html=True)
 
