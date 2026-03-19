@@ -751,7 +751,7 @@ COLOR_MAP_PERIOD = {
 # =========================
 # Trend chart (Day-of-Month comparison)
 # =========================
-st.subheader(f"Tren Harian ({metric_name})
+st.subheader(f"Tren Harian ({metric_name})")
 
 
 def day_of_month_series(df: pd.DataFrame, label: str) -> pd.DataFrame:
