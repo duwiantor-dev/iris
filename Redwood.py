@@ -876,8 +876,8 @@ st.subheader("Pareto + Delta + Comparison (This Vs Last Month)")
 
 pareto_dim = st.selectbox(
     "Dimensi Pareto",
-    ["PLATFORM", "TEAM", "PRODUCT", "BRAND", "TRANSAKSI", "AREA"],
-    index=0,
+    ["PLATFORM", "TEAM", "PRODUCT", "COUNTRY", "BRAND", "TRANSAKSI", "AREA"],
+    index=1,
 )
 
 pareto_top_n = 30
