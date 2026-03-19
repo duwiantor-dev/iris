@@ -732,7 +732,7 @@ st.markdown(kpi_html, unsafe_allow_html=True)
 # NEW TABLE #1: % TEAM TURUN
 # =========================
 st.markdown("<hr/>", unsafe_allow_html=True)
-st.subheader("📉 Proporsi TEAM yang Turun (berdasarkan QTY)")
+st.subheader("📉 Ringkasan Pergerakan TEAM (QTY)")
 down_tbl = team_down_ratio_table_cached(df_last, df_this)
 st.dataframe(
     down_tbl,
