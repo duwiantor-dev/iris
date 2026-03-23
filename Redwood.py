@@ -906,7 +906,7 @@ def build_pareto_comparison(df_this: pd.DataFrame, df_last: pd.DataFrame, dim_co
     comp["LAST_SHARE"] = np.where(total_last != 0, comp["LAST_VALUE"] / total_last * 100.0, 0.0)
     comp["PARETO_THIS"] = comp["THIS_SHARE"].cumsum()
     comp["PARETO_LAST"] = comp["LAST_SHARE"].cumsum()
-    comp["PARETO_COUNT"] = np.arange(1, len(comp) + 1)
+    comp["CUM_STORE_COUNT"] = np.arange(1, len(comp) + 1)
     comp["DELTA_SHARE"] = comp["THIS_SHARE"] - comp["LAST_SHARE"]
     comp["DELTA_LABEL"] = comp["DELTA_SHARE"].map(lambda x: f"{x:+.1f}%")
 
@@ -956,7 +956,11 @@ else:
             mode="lines+markers",
             line=dict(color="#1f77b4", width=3),
             marker=dict(symbol="circle", size=7, color="#1f77b4"),
-            hovertemplate=f"<b>%{{x}}</b><br>Pareto {label_this}: %{{y:.2f}}%<extra></extra>",
+            customdata=pareto_df[["CUM_STORE_COUNT"]],
+            hovertemplate=(
+                "Jumlah toko kumulatif: %{customdata[0]}<br>"
+                f"Pareto {label_this}: %{{y:.2f}}%<extra></extra>"
+            ),
         ),
         secondary_y=True,
     )
@@ -969,7 +973,11 @@ else:
             mode="lines+markers",
             line=dict(color="#f59e0b", width=2.5, dash="dash"),
             marker=dict(symbol="x", size=8, color="#f59e0b"),
-            hovertemplate=f"<b>%{{x}}</b><br>Pareto {label_last}: %{{y:.2f}}%<extra></extra>",
+            customdata=pareto_df[["CUM_STORE_COUNT"]],
+            hovertemplate=(
+                "Jumlah toko kumulatif: %{customdata[0]}<br>"
+                f"Pareto {label_last}: %{{y:.2f}}%<extra></extra>"
+            ),
         ),
         secondary_y=True,
     )
