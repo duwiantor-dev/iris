@@ -911,12 +911,9 @@ def build_pareto_comparison(df_this: pd.DataFrame, df_last: pd.DataFrame, dim_co
 
     comp["BAR_HOVER"] = comp.apply(
         lambda r: (
-            f"<b>{r[dim_col]}</b><br>"
+            f"<b>TOTAL</b><br>"
             f"{label_this}: {compact_number(r['THIS_VALUE'])}<br>"
-            f"{label_last}: {compact_number(r['LAST_VALUE'])}<br>"
-            f"Kontribusi {label_this}: {r['THIS_SHARE']:.2f}%<br>"
-            f"Kontribusi {label_last}: {r['LAST_SHARE']:.2f}%<br>"
-            f"Delta kontribusi: {r['DELTA_SHARE']:+.2f}%"
+            f"{label_last}: {compact_number(r['LAST_VALUE'])}"
         ),
         axis=1,
     )
