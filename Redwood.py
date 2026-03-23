@@ -958,7 +958,7 @@ else:
             marker=dict(symbol="circle", size=7, color="#1f77b4"),
             customdata=pareto_df[["CUM_STORE_COUNT"]],
             hovertemplate=(
-                "Jumlah toko kumulatif: %{customdata[0]}<br>"
+                "jumlah toko: %{customdata[0]}<br>"
                 f"Pareto {label_this}: %{{y:.2f}}%<extra></extra>"
             ),
         ),
@@ -975,7 +975,7 @@ else:
             marker=dict(symbol="x", size=8, color="#f59e0b"),
             customdata=pareto_df[["CUM_STORE_COUNT"]],
             hovertemplate=(
-                "Jumlah toko kumulatif: %{customdata[0]}<br>"
+                "jumlah toko: %{customdata[0]}<br>"
                 f"Pareto {label_last}: %{{y:.2f}}%<extra></extra>"
             ),
         ),
